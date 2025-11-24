@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, send_file
+from flask import Flask, render_template, request, redirect, url_for, session, send_file, jsonify
 from user_manager import UserManager
 from file_manager import FileManager
 import os
@@ -46,6 +46,29 @@ def admin():
     user_map = {str(uid): username for uid, username in user_manager.get_all_users()}
         
     return render_template('admin.html', users=users, files=files, query=query, user_map=user_map)
+
+@app.route('/api/admin/files')
+def api_admin_files():
+    if 'user_id' not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    user_id = int(session['user_id'])
+    if not user_manager.is_admin(user_id):
+        return jsonify({"error": "Forbidden"}), 403
+
+    files = file_manager.get_all_files()
+    user_map = {str(uid): username for uid, username in user_manager.get_all_users()}
+    
+    data = []
+    for code, name, owner in files:
+        data.append({
+            "code": code,
+            "name": name,
+            "owner": owner,
+            "owner_name": user_map.get(str(owner), "Unknown")
+        })
+    
+    return jsonify(data)
 
 @app.route('/login', methods=['POST'])
 def login():

@@ -115,3 +115,16 @@ class FileManager:
             self._save_db()
             return True
         return False
+
+    def delete_files_in_folder(self, user_id: int, folder_path: str):
+        """Deletes all files belonging to user in the specified folder and subfolders."""
+        to_delete = []
+        for code, record in self.db.items():
+            if isinstance(record, dict) and record.get("owner_id") == user_id:
+                file_folder = record.get("folder", "/")
+                # Check if file is in the folder or any subfolder
+                if file_folder == folder_path or file_folder.startswith(folder_path + "/"):
+                    to_delete.append(code)
+        
+        for code in to_delete:
+            self.delete_file(code, user_id)

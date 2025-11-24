@@ -8,12 +8,11 @@
     },
     "6734675500": {
         "username": "Thirisha3575",
-        "web_password": null,
+        "web_password": "bharath",
         "folders": [
-            "/",
-            "/Photos"
+            "/"
         ],
-        "current_folder": "/Photos"
+        "current_folder": "/"
     },
     "7305454490": {
         "username": "AdminUser",
@@ -23,5 +22,13 @@
             "/"
         ],
         "current_folder": "/"
+    },
+    "8223554454": {
+        "username": "Unknown",
+        "web_password": null,
+        "current_folder": "/",
+        "folders": [
+            "/"
+        ]
     }
 }

@@ -80,6 +80,36 @@ class UserManager:
                         subfolders.append(f)
         return subfolders
 
+    def delete_folder(self, user_id: int, folder_path: str) -> bool:
+        """Deletes a folder and all its subfolders."""
+        uid_str = str(user_id)
+        if uid_str in self.db:
+            folders = self.db[uid_str].get("folders", ["/"])
+            
+            # Cannot delete root
+            if folder_path == "/":
+                return False
+                
+            # Find all folders to remove (exact match or subfolder)
+            to_remove = []
+            for f in folders:
+                if f == folder_path or f.startswith(folder_path + "/"):
+                    to_remove.append(f)
+            
+            if to_remove:
+                for f in to_remove:
+                    folders.remove(f)
+                
+                # If current folder was deleted, reset to root
+                current = self.db[uid_str].get("current_folder", "/")
+                if current == folder_path or current.startswith(folder_path + "/"):
+                    self.db[uid_str]["current_folder"] = "/"
+                    
+                self.db[uid_str]["folders"] = folders
+                self._save_db()
+                return True
+        return False
+
     def is_registered(self, user_id: int) -> bool:
         """Checks if user_id is registered."""
         return str(user_id) in self.db
